@@ -29,9 +29,9 @@ public class AuthController {
 
     @PostMapping("login")
     public ResponseEntity<ApiResponse<LoginResponseDTO>> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
-        log.info("Login attempt for email={}", loginRequestDTO.getEmail());
+        log.info("Login attempt for username={}", loginRequestDTO.getUsername());
         ApiResponse<LoginResponseDTO> dto = authService.login(loginRequestDTO);
-        log.info("Login successful for email={}", loginRequestDTO.getEmail());
+        log.info("Login successful for password={}", loginRequestDTO.getPassword());
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
