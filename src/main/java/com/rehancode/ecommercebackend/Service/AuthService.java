@@ -5,10 +5,13 @@ import com.rehancode.ecommercebackend.DTO.LoginResponseDTO;
 import com.rehancode.ecommercebackend.DTO.RegisterRequestDTO;
 import com.rehancode.ecommercebackend.DTO.RegisterResponseDTO;
 import com.rehancode.ecommercebackend.Exception.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 public interface AuthService {
     ApiResponse<LoginResponseDTO> login(LoginRequestDTO loginRequestDTO);
 
     ApiResponse<RegisterResponseDTO> register(@Valid RegisterRequestDTO requestDTO);
+
+    ApiResponse<String> logout(HttpServletRequest request);
 }

@@ -7,10 +7,12 @@ import com.rehancode.ecommercebackend.DTO.RegisterRequestDTO;
 import com.rehancode.ecommercebackend.DTO.RegisterResponseDTO;
 import com.rehancode.ecommercebackend.Exception.ApiResponse;
 import com.rehancode.ecommercebackend.Service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder(12);
 
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -31,7 +34,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginResponseDTO>> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
         log.info("Login attempt for username={}", loginRequestDTO.getUsername());
         ApiResponse<LoginResponseDTO> dto = authService.login(loginRequestDTO);
-        log.info("Login successful for password={}", loginRequestDTO.getPassword());
+        log.info("Login successful for password={}",passwordEncoder.encode(loginRequestDTO.getPassword()));
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
@@ -41,5 +44,10 @@ public class AuthController {
         ApiResponse<RegisterResponseDTO> dto = authService.register(requestDTO);
         log.info("Registration successful for email={}", requestDTO.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+    @PostMapping("logout")
+    public ResponseEntity<ApiResponse<String>> logout(HttpServletRequest request) {
+        ApiResponse<String> dto = authService.logout(request);
+        return ResponseEntity.status(HttpStatus.OK);
     }
 }
