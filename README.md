@@ -1,4 +1,4 @@
-# Ecommerce Backend
+# Ecommerce Backend - IN DEVELOPMENT
 
 A Spring Boot REST API for a multi-role e-commerce platform. Supports **Admin**, **Seller**, and **User** roles with JWT authentication, rate limiting, image uploads, and structured JSON logging compatible with the ELK stack (Elasticsearch + Logstash + Kibana).
 
