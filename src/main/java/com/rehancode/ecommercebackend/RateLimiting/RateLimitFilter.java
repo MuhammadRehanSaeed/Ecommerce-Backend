@@ -17,13 +17,15 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     private final RateLimitService service;
     private final RateLimitConfig config;
+    private final RedisRateLimitiService redisRateLimitiService;
 
     public RateLimitFilter(
             RateLimitService service,
-            RateLimitConfig config
+            RateLimitConfig config, RedisRateLimitiService redisRateLimitiService
     ) {
         this.service = service;
         this.config = config;
+        this.redisRateLimitiService = redisRateLimitiService;
     }
 
     @Override
@@ -37,14 +39,26 @@ public class RateLimitFilter extends OncePerRequestFilter {
         String key;
 
         if (config.isPublic(path)) {
-            key = request.getRemoteAddr();
+            key = "ip:" + request.getRemoteAddr();
         } else {
-            key = String.valueOf(SecurityUtils.getAuthenticatedUserId());
+//            key = String.valueOf(SecurityUtils.getAuthenticatedUserId());
+            key = "user:" + SecurityUtils.getAuthenticatedUserId();
         }
 
         RateLimitRule rule = config.getRule(path);
         boolean allowed = service.allowRequests(key, rule);
+        boolean allowed1=redisRateLimitiService.allowRequest(key, rule);
 
+        if(!allowed1){
+            log.warn("Rate limit exceeded path={}, key={}", path, key);
+            response.setStatus(429);
+            response.getWriter().write("""
+                    {
+                    "message":"Too Many Requests"
+                    }
+                    """);
+            return;
+        }
         if (!allowed) {
             log.warn("Rate limit exceeded path={}, key={}", path, key);
             response.setStatus(429);
